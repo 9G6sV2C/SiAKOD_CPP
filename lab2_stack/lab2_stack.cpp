@@ -25,7 +25,7 @@ public:
 
     bool isEmpty() { return _size == 0; }
 
-    size_t getSize() { return _size; }
+    size_t size() { return _size; }
 
     // Добавление
     void push(int data) {
@@ -57,7 +57,7 @@ public:
     }
 
     // Получение top
-    int get() {
+    int top() {
         if (isEmpty()) {
             throw runtime_error("Can't get, queue is empty.");
         }
@@ -82,15 +82,18 @@ private:
     size_t _size;
 };
 
+// { 4 --> 3 --> 5 --> 2 --> 3 --> 1 }
+// { 4 --> 3 --> 5 --> 2 --> 3 --> 1 }
 void replaceWithNextGreater(vector<int>& A) {
     size_t n = A.size();
     stack <int> st;
+    //Stack st;
 
     // Проходим массив с конца к началу
     for (size_t i = A.size(); i > 0; i--) {
 
-        // Удаляем элементы из стека, которые меньше или равны текущему элементу
         if (st.size() > 0) {
+            // Удаляем элементы из стека, которые меньше или равны текущему элементу
             while (st.size() > 0 && (st.top() <= A[i - 1])) {
                 st.pop();
             }
@@ -104,9 +107,9 @@ void replaceWithNextGreater(vector<int>& A) {
         // Добавляем текущий элемент в стек
         st.push(t);
     }
-    for (size_t i = 0; i < A.size(); i++)
-        cout << A[i] << ' ';
-    cout << '\n';
+    //for (size_t i = 0; i < A.size(); i++)
+    //    cout << A[i] << ' ';
+    //cout << '\n';
 }
 
 int main() {
