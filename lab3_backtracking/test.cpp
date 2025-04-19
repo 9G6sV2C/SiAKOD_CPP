@@ -1,59 +1,36 @@
-﻿//#include <iostream>
-//#include <vector>
-//#include <string>
-//
-//using namespace std;
-//
-//void findMaxChain(const vector<string>& words, vector<bool>& used, const string& lastWord,
-//                  vector<string>& currChain, vector<string>& maxChain) {
-//
-//    // Проверяем, не нашли ли мы цепочку длиннее текущей максимальной
-//    if (currChain.size() > maxChain.size()) {
-//        maxChain = currChain;
+﻿#include <iostream>
+#include <vector>
+#include <tuple>
+
+using namespace std;
+
+//class Shape {
+//public:
+//    // Объявление виртуальной функции
+//    virtual void draw() const {
+//        cout << "Drawing a shape." << endl;
 //    }
+//};
 //
-//    // Перебираем все слова
-//    for (size_t i = 0; i < words.size(); ++i) {
-//        // Если слово еще не использовано и подходит по условию (первая буква совпадает с последней предыдущего)
-//        if (!used[i] && (lastWord.empty() || words[i][0] == lastWord.back())) {
-//            // Делаем выбор
-//            // Помечаем слово как использованное
-//            used[i] = true;
-//            // Добавляем в текущую цепочку
-//            currChain.push_back(words[i]);
-//
-//            // Рекурсивно ищем продолжение цепочки для текущего слова
-//            findMaxChain(words, used, words[i], currChain, maxChain);
-//
-//            // Отменяем выбор
-//            currChain.pop_back();
-//            used[i] = false;
-//        }
+//class Circle : public Shape {
+//public:
+//    // Переопределение виртуальной функции
+//    void draw() const override {
+//        cout << "Drawing a circle." << endl;
 //    }
-//}
-//
-//vector<string> getMaxWordChain(const vector<string>& words) {
-//    vector<string> maxChain;
-//    vector<string> currChain;
-//    vector<bool> used(words.size(), false);
-//
-//    findMaxChain(words, used, "", currChain, maxChain);
-//
-//    return maxChain;
-//}
-//
-//int main() {
-//    // Пример использования
-//    vector<string> words = {"apple", "elephant", "tiger", "rabbit", "tea", "eagle"};
-//
-//    vector<string> maxChain = getMaxWordChain(words);
-//
-//    cout << "Max chain length: " << maxChain.size() << '\n';
-//    cout << "Chain: ";
-//    for (const auto& word : maxChain) {
-//        cout << word << " ";
-//    }
-//    cout << '\n';
-//
-//    return 0;
-//}
+//};
+
+class A {
+    int var1;
+    int var2;
+    int var3;
+};
+
+int main() {
+    for (int _ = 0; _ < 5; ++_) {
+        auto f = false;
+        cout << f;
+    }
+
+    return 0;
+}
