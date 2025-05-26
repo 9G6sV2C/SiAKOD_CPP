@@ -58,7 +58,9 @@ public:
 
     void print() const {
         cout << "\n\\/ \\/ \\/ \\/ \\/ \\/ \\/ \\/ \\/ \n\n";
+
         printHelperR(_root); cout << '\n';
+
         cout << "/\\ /\\ /\\ /\\ /\\ /\\ /\\ /\\ /\\ \n\n";
     }
 
@@ -123,22 +125,58 @@ private:
         int bf = balanceFactor(node);
 
         // Left Left
+        // включение в левое поддерево левого поддерева
+        /*
+            A (bal = 2)
+           /
+          B (bal >= 0)
+         /
+        C
+
+        */
         if (bf > 1 && balanceFactor(node->_left) >= 0) {
             return rotateRight(node);
         }
 
         // Left Right
+        // включение в правое поддерево левого поддерева
+        /*
+            A (bal = 2)
+           /
+          B (bal = -1)
+           \
+           C
+
+        */
         if (bf > 1 && balanceFactor(node->_left) < 0) {
             node->_left = rotateLeft(node->_left);
             return rotateRight(node);
         }
 
         // Right Right
+        // включение в правое поддерево правого поддерева
+         /*
+            A (bal = -2)
+             \
+              B (bal <= 0)
+               \
+                C
+
+        */
         if (bf < -1 && balanceFactor(node->_right) <= 0) {
             return rotateLeft(node);
         }
 
         // Right Left 
+        // включение в правое поддерево левого поддерева
+        /*
+            A (bal = -2)
+             \
+              B (bal = 1)
+             /
+            C
+
+        */
         if (bf < -1 && balanceFactor(node->_right) > 0) {
             node->_right = rotateRight(node->_right);
             return rotateLeft(node);
@@ -166,7 +204,7 @@ private:
             return currRoot;
         }
 
-        return balance(currRoot); // !!! проверь достегаемо ли
+        return balance(currRoot);
     }
 
     TreeNode<TKey, TVal>* deleteHelperR(TreeNode<TKey, TVal>*& currRoot, TKey& key) {
@@ -215,7 +253,7 @@ private:
             return nullptr;
         }
 
-        return balance(currRoot); // !!! проверь достегаемо ли
+        return balance(currRoot);
     }
 
     // !!! Передаём не по ссылке т.к. будем изменять

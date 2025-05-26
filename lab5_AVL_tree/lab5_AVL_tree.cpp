@@ -299,12 +299,12 @@ int main() {
     srand(time(0));
 
     demo_AVL();
-    
+
     BusDB bdb;
     vector<pair<int, Bus>> arrBuses;
 
     // '' случайно сгенерированных автобусов добовляем в arrBuses
-    for (int i = 0; i < 200000; i += rnd(1, 3)) {
+    for (int i = 0; i < 20000; i += rnd(1, 3)) {
         // "красивые" символы ASCII
         string currName(1, static_cast<char>(rnd(33, 126)));
 
@@ -354,7 +354,7 @@ int main() {
     auto duration_total_binSearch = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
 
     // Для усложнения, ищем '' случайных элементов
-    for (int _ = 0; _ < 100; ++_) {
+    for (int _ = 0; _ < 200; ++_) {
         toFind = arrBuses[rnd(0, arrBuses.size())];
 
         //cout << _+1 << ") ";
@@ -372,7 +372,7 @@ int main() {
 
     cout << '\n';
 
-    cout << duration_total_linear.count() << ' ' << duration_total_avl.count() << ' ' 
+    cout << duration_total_linear.count() << ' ' << duration_total_avl.count() << ' '
          << duration_total_binSearch.count() << '\n';
 
     return 0;
