@@ -1,198 +1,13 @@
 ﻿#include <iostream>
 #include <string>
-#include <initializer_list>
 #include <vector>
 #include <random>
 #include <chrono>
+#include "lab5_AVL_and_BST_trees.h"
 
 using namespace std;
 
-
-template <typename TKey, typename TVal> class BinarySearchTree;
-
-template <typename TKey, typename TVal> class TreeNode {
-    template <typename TKey, typename TVal> friend class BinarySearchTree;
-
-public:
-    TreeNode(TKey key, TVal value) : _key(key), _value(value), _left(nullptr), _right(nullptr) { }
-    TreeNode(const TreeNode&) = delete;
-
-    ~TreeNode() { }
-
-    // Возвращаем ссылку на поле класса, без копировния, + это lvalue
-    const TKey& getKey() const { return _key; }
-    // Возвращаем ссылку на поле класса, без копировния, + это lvalue
-    const TVal& getValue() const { return _value; }
-
-    // Возвращаем ссылку на поле класса, без копировния, + это lvalue
-    // Можно нарушать инкапсуляцию
-    TVal& getValue() { return _value; }
-
-    //void setValue(TVal value) { _value = value; }
-
-    friend ostream& operator<<(ostream& os, const TreeNode& treeNode) {
-        os << "{ " << treeNode.getKey() << " } --> { " << treeNode.getValue() << " }";
-        return os;
-    }
-private:
-    TKey _key;
-    TVal _value;
-    TreeNode* _left;
-    TreeNode* _right;
-};
-
-template <typename TKey, typename TVal> class BinarySearchTree {
-public:
-    BinarySearchTree() : _root(nullptr), _size(0) { }
-    //BinarySearchTree(const BinarySearchTree&) = delete;
-
-    ~BinarySearchTree() { deleteAllHelperR(_root); }
-
-    // Если такой узел уже есть, то ничего не произойдёт
-    void insert(TKey key, TVal value) { _root = insertHelperR(_root, key, value); ++(this->_size); }
-
-    // Удаляет эл., если такого нет, то ничего не произойдёт
-    void del(TKey key) { _root = deleteHelperR(_root, key); --(this->_size); }
-
-    TreeNode<TKey, TVal>* find(TKey key) const { return findHelper(_root, key); }
-
-    void print() const {
-        cout << "\n\\/ \\/ \\/ \\/ \\/ \\/ \\/ \\/ \\/ \n\n";
-        printHelperR(_root); cout << '\n';
-        cout << "/\\ /\\ /\\ /\\ /\\ /\\ /\\ /\\ /\\ \n\n";
-    }
-
-    int size() const { return _size; }
-
-    TreeNode<TKey, TVal>* getRoot() { return _root; }
-
-private:
-    TreeNode<TKey, TVal>* _root;
-    int _size;
-
-    TreeNode<TKey, TVal>* insertHelperR(TreeNode<TKey, TVal>*& currRoot, TKey& key, TVal& value) {
-        if (currRoot == nullptr) {
-            return new TreeNode<TKey, TVal>(key, value);
-        }
-
-        // Можно ли обойтись без присваиваний?
-        if (key < currRoot->_key) {
-            currRoot->_left = insertHelperR(currRoot->_left, key, value);
-        }
-        else if (key > currRoot->_key) {
-            currRoot->_right = insertHelperR(currRoot->_right, key, value);
-        }
-
-        return currRoot;
-    }
-
-    TreeNode<TKey, TVal>* deleteHelperR(TreeNode<TKey, TVal>*& currRoot, TKey& key) {
-        if (currRoot == nullptr) {
-            return nullptr;
-        }
-
-        // else-ы для красоты
-        // Спускаемся до удалякмого узла
-        if (key < currRoot->_key) {
-            currRoot->_left = deleteHelperR(currRoot->_left, key);
-            return currRoot;
-        }
-        else if (key > currRoot->_key) {
-            currRoot->_right = deleteHelperR(currRoot->_right, key);
-            return currRoot;
-        }
-
-        else {
-            // 1. Нет дочерних
-            if (currRoot->_left == nullptr && currRoot->_right == nullptr) {
-                delete currRoot;
-                return nullptr;
-            }
-
-            // 2. Один дочений
-            else if (currRoot->_left == nullptr) {
-                TreeNode<TKey, TVal>* temp = currRoot->_right;
-                delete currRoot;
-                return temp;
-            }
-            else if (currRoot->_right == nullptr) {
-                TreeNode<TKey, TVal>* temp = currRoot->_left;
-                delete currRoot;
-                return temp;
-            }
-
-            // 3. Два дочерних
-            else {
-                TreeNode<TKey, TVal>* succ = getLeftSuccessor(currRoot); // находим 'наследника' (тот на который будем заменять)
-                currRoot->_key = succ->_key; // Заменяем ключи
-                currRoot->_right = deleteHelperR(currRoot->_right, succ->_key);
-                return currRoot;
-            }
-        }
-    }
-
-    // !!! Передаём не по ссылке т.к. будем изменять
-    // Возвращает указатель на найденный узел, если такого нет, то return nullptr
-    // Это лучше чем return bool, т.к. деёт больше информации
-    TreeNode<TKey, TVal>* findHelper(TreeNode<TKey, TVal>* currRoot, TKey& key) const {
-        while (currRoot != nullptr) {
-            if (key < currRoot->_key) {
-                currRoot = currRoot->_left;
-            }
-            else if (key > currRoot->_key) {
-                currRoot = currRoot->_right;
-            }
-            else { // =
-                break;
-            }
-        }
-
-        return currRoot;
-    }
-
-    // !!! Передаём не по ссылке т.к. будем изменять
-    // Поиск наименьшего (самого левого) в ПРАВОМ поддереве
-    TreeNode<TKey, TVal>* getLeftSuccessor(TreeNode<TKey, TVal>* currRoot) {
-        currRoot = currRoot->_right;
-
-        while (currRoot != nullptr && currRoot->_left != nullptr) {
-            currRoot = currRoot->_left;
-        }
-
-        return currRoot;
-    }
-
-    // Концевой обход
-    void deleteAllHelperR(TreeNode<TKey, TVal>*& currRoot) {
-        if (currRoot != nullptr) {
-            deleteAllHelperR(currRoot->_left);
-            deleteAllHelperR(currRoot->_right);
-            //cout << "------ " << *currRoot << " is deleted\n";
-            delete currRoot;
-        }
-    }
-
-    void printHelperR(const TreeNode<TKey, TVal>* const& currRoot) const {
-        if (currRoot != nullptr) {
-            printHelperR(currRoot->_left);
-            cout << *currRoot << '\n';
-            printHelperR(currRoot->_right);
-        }
-    }
-
-    // Не используется.
-    // Спецификация если _value -- pair
-    /*
-    template <typename U, typename V>
-    void printHelperR(TreeNode<TKey, pair<U, V>>*const& currRoot) const {
-        if (currRoot != nullptr) {
-            printHelperR(currRoot->_left);
-            cout << currRoot->_key << '-' << currRoot->_value.first << '~' << currRoot->_value.second << '\n';
-            printHelperR(currRoot->_right);
-        }
-    }
-    */
-};
+#pragma region Автобусы
 
 enum bus_status { on_route, in_park, NaN };
 
@@ -289,166 +104,202 @@ public:
 
 private:
     // номерАвтобуса_классАвтобус
-    BinarySearchTree<int, Bus> _busDB;
+    AVLTree<int, Bus> _busDB;
 };
 
-// unused class EngRusDict
-/*
-using psi = pair<string, int>;
-class EngRusDict {
-public:
-    EngRusDict() { }
-
-    ~EngRusDict() { }
-
-    // Возможно потом сделаю через initializer_list
-    EngRusDict(int n) {
-        string currWordEng, currWordRus;
-        int currCounter;
-        for (int _ = 0; _ < n; ++_) {
-            cin >> currWordEng >> currWordRus >> currCounter;
-            this->insertElement(currWordEng, currWordRus, currCounter);
-        }
-    }
-    void insertWord(string wordEng, string wordRus) { _dictRoot.insert(wordEng, psi(wordRus, 1)); }
-
-    void delWord(string wordEng) { _dictRoot.del(wordEng); }
-
-    TreeNode<string, psi>* findWord(string wordEng) {
-        TreeNode<string, psi>* wordPtr = _dictRoot.find(wordEng);
-
-        //++(wordPtr->getValue().second);
-        // Без нарушений инкапсуляции:
-        IncCounter(wordPtr);
-
-        return wordPtr;
-    }
-
-    void changeWord(string wordEng, string wordRus, int counter) {
-        auto wordPtr = findWord(wordEng);
-        if (wordPtr != nullptr) {
-            wordPtr->setValue(psi(wordRus, counter));
-        }
-    }
-
-    void findMostFreqUsedWordR(TreeNode<string, psi>* currBestWord) {
-        //if currBestWord
-    }
-
-    BinarySearchTree<string, psi> alghorthm() {
-        BinarySearchTree<string, psi> dictRoot_copy = _dictRoot;
-
-
-    }
-
-    void IncCounter(TreeNode<string, psi>*& wordPtr) {
-        wordPtr->setValue(psi(wordPtr->getValue().first, (wordPtr->getValue().second) + 1));
-    }
-
-    void printDict() { _dictRoot.print(); }
-
-private:
-    // англ_(рус_счётчикОбращений)
-    BinarySearchTree<string, psi> _dictRoot;
-
-    void insertElement(string wordEng, string wordRus, int counter) { _dictRoot.insert(wordEng, psi(wordRus, counter)); }
-};
-*/
-
-void test_BST() {
-    BinarySearchTree<int, int> bst;
-
-    cout << "30 20 10 40 50 5 15\n";
-
-    bst.insert(30, 0);
-    bst.insert(20, 0);
-    bst.insert(10, 0);
-    bst.insert(40, 0);
-    bst.insert(50, 0);
-    bst.insert(5, 0);
-    bst.insert(15, 0);
-
-
-    bst.print();
-
-    cout << "*(bst.find(40)) = " << *(bst.find(40)) << '\n';
-    cout << "Root = " << (bst.getRoot())->getKey() << '\n';
-    cout << "bst.size() = " << bst.size() << '\n';
-
-    cout << "bst.del(10);\n";
-    bst.del(10);
-
-    bst.print();
-    cout << "bst.size() = " << bst.size() << '\n' << '\n';
-}
-
-void test_BusDB() {
-    /*
-    cat koshka 50
-    dog sobaka 51
-    dog sobaka2 52
-    word slovo 52
-
-    17 Alex 70 in_park
-    92 Boba 51 abc
-    11 Nikita 21 on_route
-    */
-
-    BusDB bdb1;
-    bdb1.insertBus(32, Bus("Olog", 21, bus_status::on_route));
-    bdb1.insertBus(17, Bus("Alex", 70, bus_status::in_park));
-    bdb1.insertBus(92, Bus("Boba", 51));
-    bdb1.insertBus(11, Bus("Nikita", 52, bus_status::on_route));
-    bdb1.printBusDB();
-
-    cout << "*(bdb1.findBus(32)) = " << *(bdb1.findBus(32)) << '\n';
-    cout << "bdb1.size() = " << bdb1.size() << '\n';
-    cout << "bdb1.toGo(17);\n";
-    bdb1.toGo(17);
-    bdb1.printBusDB();
-
-    //BusDB bdb2(3);
-
-    //bdb2.printBusDB();
-}
-
-void test_EngRusDict_NotUsed() {
-    /*
-    EngRusDict d;
-
-    d.insertWord("cat", "koshka");
-    d.insertWord("dog", "sobaka");
-    d.insertWord("dog", "sobaka2"); // nothing
-    d.insertWord("word", "slovo");
-
-    d.printDict();
-
-    d.findWord("dog");
-
-    d.printDict();
-
-    d.changeWord("word", "lox", 52);
-
-    d.printDict();
-
-    //d.printDict();
-*/
-}
+#pragma endregion
 
 inline int rnd(int A, int B) { return A + rand() % (B - A + 1); }
 
+#pragma region Демонстрация работы АВЛ-дерева
+
+void demoBasicOperations() {
+    cout << "=== demoBasicOperations ===\n";
+
+    AVLTree<int, string> tree;
+
+    tree.insert(50, "Fifty");
+    tree.insert(30, "Thirty");
+    tree.insert(70, "Seventy");
+    tree.insert(20, "Twenty");
+    tree.insert(40, "Forty");
+    tree.insert(60, "Sixty");
+    tree.insert(80, "Eighty");
+
+    /*
+        50
+      /    \
+    30      70
+   /  \    /  \
+20    40 60    80
+
+    */
+    cout << tree.size() << '\n';
+    tree.print();
+
+    // Поиск элементов
+    int keyToFind = 40;
+    cout << "keyToFind = " << keyToFind << '\n';
+    auto* node = tree.find(keyToFind);
+    if (node) {
+        cout << *node << '\n';
+    }
+    else {
+        cout << "Not found.\n";
+    }
+
+    keyToFind = 45;
+    cout << "keyToFind = " << keyToFind << '\n';
+    node = tree.find(keyToFind);
+    if (node) {
+        cout << *node << '\n';
+    }
+    else {
+        cout << "Not found.\n";
+    }
+
+    cout << "Deleting keys 20 and 70...\n";
+    tree.del(20);
+    tree.del(70);
+    /*
+
+        50
+      /    \
+    30      60
+      \      \
+      40      80
+
+    */
+    cout << tree.size() << '\n';
+    tree.print();
+}
+
+void demoBalance() {
+    cout << "\n=== demoBalance ===\n";
+
+    AVLTree<int, string> tree;
+
+    // Вставка элементов, которые могут вызвать дисбаланс
+    tree.insert(10, "ten");
+    tree.insert(20, "twenty");
+    tree.insert(30, "thirty");
+    tree.insert(40, "forty");
+    tree.insert(50, "fifty");
+    tree.insert(25, "twenty five");
+
+    /*
+        25
+      /    \
+    15      40
+   /  \    /  \
+10    20 30    50
+
+    */
+    cout << tree.size() << '\n';
+    tree.print();
+
+    cout << "Deleting nodes with keys 40 and 50...\n";
+    // Удаление, которое может вызвать дисбаланс
+    tree.del(40);
+    tree.del(50);
+
+    /*
+        25
+      /    \
+    15      30
+   /
+10
+    */
+    cout << tree.size() << '\n';
+    tree.print();
+}
+
+void demoUpdateValue() {
+    cout << "\n=== demoUpdateValue ===\n";
+
+    AVLTree<int, string> tree;
+
+    tree.insert(1, "One");
+    tree.insert(2, "Two");
+    tree.insert(3, "Three");
+
+    cout << tree.size() << '\n';
+    tree.print();
+
+    cout << "Updating key 2...\n";
+    auto node = tree.find(2);
+    if (node) {
+        node->getValue() = "Two (updated)";
+    }
+
+    cout << tree.size() << '\n';
+    tree.print();
+}
+
+void demo_AVL() {
+    cout << "--------------------- demo_AVL -------------------------------\n\n";
+    demoBasicOperations();
+    demoBalance();
+    demoUpdateValue();
+    cout << "--------------------------------------------------------------\n\n";
+}
+
+#pragma endregion
+
+#pragma region Измерения времени выполнения
+
+chrono::microseconds measureLinearSearch(vector<pair<int, Bus>>& arrBuses, pair<int, Bus>& toFind) {
+    auto start_i = chrono::high_resolution_clock::now();
+    for (const auto& curr : arrBuses) {
+        if (curr == toFind) {
+            break;
+        }
+    }
+    auto stop_i = chrono::high_resolution_clock::now();
+
+    return chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
+}
+
+chrono::microseconds measureAVLTreeSearch(BusDB& bdb, pair<int, Bus>& toFind) {
+    auto start_i = chrono::high_resolution_clock::now();
+    bdb.findBus(toFind.first);
+    auto stop_i = chrono::high_resolution_clock::now();
+
+    return chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
+}
+
+chrono::microseconds measureBinSearch(vector<pair<int, Bus>> arrBuses_sorted, pair<int, Bus>& toFind) {
+    int l_i = 0;
+    int r_i = arrBuses_sorted.size() - 1;
+    int m_i = (l_i + r_i) / 2;
+    bool flag = false;
+
+    auto start_i = chrono::high_resolution_clock::now();
+    for (; (l_i <= r_i) && !flag; ) {
+        m_i = (l_i + r_i) / 2;
+
+        if (arrBuses_sorted[m_i].first < toFind.first) {
+            l_i = m_i + 1;
+        }
+        else if (arrBuses_sorted[m_i].first > toFind.first) {
+            r_i = m_i - 1;
+        }
+        else {
+            flag = true;
+        }
+    }
+    auto stop_i = chrono::high_resolution_clock::now();
+
+    return chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
+}
+
+#pragma endregion
+
 int main() {
-    // если что, INT_MAX = 2.147.483.647
     srand(time(0));
 
-    cout << "--------------------- test_BST -------------------------------\n\n";
-    test_BST();
-    cout << "--------------------------------------------------------------\n\n";
-
-    cout << "--------------------- test_BusDB -----------------------------\n\n";
-    test_BusDB();
-    cout << "--------------------------------------------------------------\n\n";
-
+    demo_AVL();
+    
     BusDB bdb;
     vector<pair<int, Bus>> arrBuses;
 
@@ -473,7 +324,7 @@ int main() {
     }
 
     // Копия arrBuses, отсортированого по номерам, пригодиться для бин. поиска
-    vector<pair<int, Bus>>arrBuses_sorted = arrBuses;
+    vector<pair<int, Bus>> arrBuses_sorted = arrBuses;
 
     // Перемешиваем массив
     random_shuffle(arrBuses.begin(), arrBuses.end());
@@ -483,94 +334,46 @@ int main() {
         bdb.insertBus(arrBuses[i].first, arrBuses[i].second);
     }
 
-    // Вывод автобусов \/
-    /*
-    for (int i = 1; i < arrBuses.size(); ++i) {
-        cout << arrBuses[i].first << " -- " << arrBuses[i].second << '\n';
-    }
+#pragma region Вывод автобусов
+    //for (int i = 1; i < arrBuses.size(); ++i) {
+    //    cout << arrBuses[i].first << " -- " << arrBuses[i].second << '\n';
+    //}
 
-    cout << "*(bdb.getBusRoot()) = " << *(bdb.getBusRoot()) << '\n' << '\n';
+    //cout << "*(bdb.getBusRoot()) = " << *(bdb.getBusRoot()) << '\n' << '\n';
 
-    bdb.printBusDB();
+    //bdb.printBusDB();
 
-    cout << "--------------------------------------------------------------\n\n";
-    */
-    // Вывод автобусов /\
-
+    //cout << "--------------------------------------------------------------\n\n";
+#pragma endregion
 
     pair<int, Bus> toFind;
     auto start_i = chrono::high_resolution_clock::now();
     auto stop_i = chrono::high_resolution_clock::now();
-    auto duration_i = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
     auto duration_total_linear = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
-    auto duration_total_bst = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
+    auto duration_total_avl = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
     auto duration_total_binSearch = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
-    auto l_i = 0;
-    auto r_i = arrBuses_sorted.size() - 1;
-    auto m_i = (l_i + r_i) / 2;
-    auto flag = false;
 
     // Для усложнения, ищем '' случайных элементов
-    for (int _ = 0; _ < 10000; ++_) {
+    for (int _ = 0; _ < 100; ++_) {
         toFind = arrBuses[rnd(0, arrBuses.size())];
 
         //cout << _+1 << ") ";
 
-
         // Линейный поиск в массиве
-        start_i = chrono::high_resolution_clock::now();
-        for (const auto& curr : arrBuses) {
-            if (curr == toFind) {
-                break;
-            }
-        }
-        stop_i = chrono::high_resolution_clock::now();
-        duration_i = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
-        duration_total_linear += duration_i;
-
-        //cout << duration_i.count() << ' ';
-
+        duration_total_linear += measureLinearSearch(arrBuses, toFind);
 
         // Поиск в дереве
-        start_i = chrono::high_resolution_clock::now();
-        bdb.findBus(toFind.first);
-        stop_i = chrono::high_resolution_clock::now();
-        duration_i = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
-        duration_total_bst += duration_i;
-
-        //cout << duration_i.count() << ' ';
+        duration_total_avl += measureAVLTreeSearch(bdb, toFind);
 
 
-        // Бинарный поиск в массиве
-        l_i = 0;
-        r_i = arrBuses_sorted.size() - 1;
-        flag = false;
-
-        start_i = chrono::high_resolution_clock::now();
-        for (; (l_i <= r_i) && !flag; ) {
-            m_i = (l_i + r_i) / 2;
-
-            if (arrBuses_sorted[m_i].first < toFind.first) {
-                l_i = m_i + 1;
-            }
-            else if (arrBuses_sorted[m_i].first > toFind.first) {
-                r_i = m_i - 1;
-            }
-            else {
-                flag = true;
-            }
-        }
-        stop_i = chrono::high_resolution_clock::now();
-        duration_i = chrono::duration_cast<chrono::microseconds>(stop_i - start_i);
-        duration_total_binSearch += duration_i;
-        //cout << duration_i.count() << '\n';
+        // Бинарный поиск в массиве arrBuses_sorted
+        duration_total_binSearch += measureBinSearch(arrBuses_sorted, toFind);
     }
 
     cout << '\n';
 
-    cout << duration_total_linear.count() << ' ' << duration_total_bst.count() << ' ' << duration_total_binSearch.count() << '\n';
-
-    // бин. поиск быстрее чем бинарное дерево поиска быстрее чем линейный поиск
+    cout << duration_total_linear.count() << ' ' << duration_total_avl.count() << ' ' 
+         << duration_total_binSearch.count() << '\n';
 
     return 0;
 }

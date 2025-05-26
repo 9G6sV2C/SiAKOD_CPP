@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{b7e38043-90d1-49e2-a63c-d60b82128f8d}</ProjectGuid>
-    <RootNamespace>lab5AVLtree</RootNamespace>
+    <ProjectGuid>{1791e58a-306b-40d6-adc4-367a211f7002}</ProjectGuid>
+    <RootNamespace>lab6sort</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -127,10 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="lab5_AVL_tree.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="lab5_AVL_and_BST_trees.h" />
+    <ClCompile Include="lab6_sort.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
