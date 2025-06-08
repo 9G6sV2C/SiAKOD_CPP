@@ -14,7 +14,7 @@ const size_t CHUNK_SIZE = 1000000000; // Размер чанка (1 млрд ч�
 void saveChunkToFile(const vector<int>& chunk, const string& filename) {
     ofstream outFile(filename);
     if (!outFile) {
-        cerr << "Ошибка открытия файла для записи: " << filename << endl;
+        cerr << "Error opening file for writing: " << filename << endl;
         return;
     }
     for (int num : chunk) {
@@ -28,7 +28,7 @@ vector<int> readChunkFromFile(const string& filename) {
     vector<int> chunk;
     ifstream inFile(filename);
     if (!inFile) {
-        cerr << "Ошибка открытия файла для чтения: " << filename << endl;
+        cerr << "Error opening file for reading: " << filename << endl;
         return chunk;
     }
     chunk.reserve(CHUNK_SIZE);
@@ -75,7 +75,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
 
     ifstream in(inputFile);
     if (!in) {
-        cerr << "Не удалось открыть входной файл: " << inputFile << endl;
+        cerr << "Failed to open input file: " << inputFile << endl;
         return;
     }
 
@@ -85,7 +85,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
     int num;
     size_t totalNumbers = 0;
 
-    cout << "Фаза 1: Создание отсортированных чанков..." << endl;
+    cout << "Phase 1: Creating sorted chunks..." << endl;
 
     while (in >> num) {
         chunk.push_back(num);
@@ -99,7 +99,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
             chunk.reserve(CHUNK_SIZE);
 
             if (chunkFiles.size() % 10 == 0) {
-                cout << "Создано чанков: " << chunkFiles.size() << endl;
+                cout << "Chunks created: " << chunkFiles.size() << endl;
             }
         }
     }
@@ -113,7 +113,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
         totalNumbers += chunk.size();
     }
 
-    cout << "Фаза 2: Слияние " << chunkFiles.size() << " чанков..." << endl;
+    cout << "Phase 2: Merge" << chunkFiles.size() << "chunks..." << endl;
 
     while (chunkFiles.size() > 1) {
         vector<string> newChunkFiles;
@@ -131,7 +131,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
             }
         }
         chunkFiles = newChunkFiles;
-        cout << "Осталось чанков: " << chunkFiles.size() << endl;
+        cout << "There are still chunks left: " << chunkFiles.size() << endl;
     }
 
 
@@ -149,9 +149,9 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
     }
 
     auto end = high_resolution_clock::now();
-    cout << "Сортировка завершена. Обработано " << totalNumbers << " чисел за "
-        << duration_cast<seconds>(end - start).count() << " секунд." << endl;
-    cout << "Временные файлы сохранены на диске." << endl;
+    cout << "Sorting is complete. Processed " << totalNumbers << " numbers for "
+        << duration_cast<seconds>(end - start).count() << " seconds." << endl;
+    cout << "Temporary files are saved on disk." << endl;
 }
 
 int main() {
