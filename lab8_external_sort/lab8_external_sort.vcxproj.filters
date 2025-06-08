@@ -18,7 +18,7 @@
     <ClCompile Include="lab8_external_sort.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test2.cpp">
+    <ClCompile Include="lab0.8.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
