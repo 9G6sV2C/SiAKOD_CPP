@@ -4,17 +4,60 @@
 #include <algorithm>
 #include <string>
 #include <chrono>
+#include <random>
 
 using namespace std;
 using namespace std::chrono;
 
-const size_t CHUNK_SIZE = 1000000000; // Размер чанка (1 млрд чисел)
+void generate_large_file() {
+    // Инициализация генератора случайных чисел
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<int> dist(0, INT_MAX);
+
+    const long long TARGET_SIZE = 1024 * 1024 * 1024; // 1 ГБ в байтах
+
+    ofstream outfile("proba.txt");
+    if (!outfile) {
+        cerr << "Couldn't open the file for writing!" << '\n';
+        return;
+    }
+
+
+    long long current_size = 0;
+    int counter = 0;
+
+    while (current_size < TARGET_SIZE) {
+        int num = dist(gen); // Генерируем случайное число
+        outfile << num << '\n'; // Записываем число с новой строки
+
+        if (!outfile) {
+            cerr << "Error writing to the file!" << '\n';
+            return;
+        }
+
+        // Приблизительный расчёт размера (каждое число + перевод строки)
+        current_size += to_string(num).length() + 1;
+
+        // Выводим прогресс каждый 1 миллион записей
+        if (++counter % 1000000 == 0) {
+            cout << "Wroten: " << (current_size / 1048576) << " MB" << '\n';
+        }
+    }
+
+    outfile.close();
+    cout << "The file 'proba.txt 'successfully created. Size: "
+         << (current_size / 1048576) << " MB." << '\n';
+}
+
+
+const size_t CHUNK_SIZE = 10'000'000; // Размер чанка (1 млрд чисел)
 
 // Функция для сохранения вектора в файл
 void saveChunkToFile(const vector<int>& chunk, const string& filename) {
     ofstream outFile(filename);
     if (!outFile) {
-        cerr << "Error opening file for writing: " << filename << endl;
+        cerr << "Error opening file for writing: " << filename << '\n';
         return;
     }
     for (int num : chunk) {
@@ -28,7 +71,7 @@ vector<int> readChunkFromFile(const string& filename) {
     vector<int> chunk;
     ifstream inFile(filename);
     if (!inFile) {
-        cerr << "Error opening file for reading: " << filename << endl;
+        cerr << "Error opening file for reading: " << filename << '\n';
         return chunk;
     }
     chunk.reserve(CHUNK_SIZE);
@@ -75,7 +118,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
 
     ifstream in(inputFile);
     if (!in) {
-        cerr << "Failed to open input file: " << inputFile << endl;
+        cerr << "Failed to open input file: " << inputFile << '\n';
         return;
     }
 
@@ -85,7 +128,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
     int num;
     size_t totalNumbers = 0;
 
-    cout << "Phase 1: Creating sorted chunks..." << endl;
+    cout << "Phase 1: Creating sorted chunks..." << '\n';
 
     while (in >> num) {
         chunk.push_back(num);
@@ -99,7 +142,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
             chunk.reserve(CHUNK_SIZE);
 
             if (chunkFiles.size() % 10 == 0) {
-                cout << "Chunks created: " << chunkFiles.size() << endl;
+                cout << "Chunks created: " << chunkFiles.size() << '\n';
             }
         }
     }
@@ -113,7 +156,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
         totalNumbers += chunk.size();
     }
 
-    cout << "Phase 2: Merge" << chunkFiles.size() << "chunks..." << endl;
+    cout << "Phase 2: Merge" << chunkFiles.size() << "chunks..." << '\n';
 
     while (chunkFiles.size() > 1) {
         vector<string> newChunkFiles;
@@ -131,7 +174,7 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
             }
         }
         chunkFiles = newChunkFiles;
-        cout << "There are still chunks left: " << chunkFiles.size() << endl;
+        cout << "There are still chunks left: " << chunkFiles.size() << '\n';
     }
 
 
@@ -150,13 +193,12 @@ void externalTextFileSort(const string& inputFile, const string& outputFile) {
 
     auto end = high_resolution_clock::now();
     cout << "Sorting is complete. Processed " << totalNumbers << " numbers for "
-        << duration_cast<seconds>(end - start).count() << " seconds." << endl;
-    cout << "Temporary files are saved on disk." << endl;
+        << duration_cast<milliseconds>(end - start).count() << " milliseconds." << '\n';
+    cout << "Temporary files are saved on disk." << '\n';
 }
 
 int main() {
-    setlocale(LC_ALL, "RUS");
-    const string inputFile = "proba.txt";
+    const string inputFile = "_INPUT.txt";
     const string outputFile = "SortedFile.txt";
 
     externalTextFileSort(inputFile, outputFile);

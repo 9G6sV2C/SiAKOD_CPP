@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="lab8_external_sort.cpp" />
     <ClCompile Include="lab0.8.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

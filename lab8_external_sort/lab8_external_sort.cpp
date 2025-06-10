@@ -2,10 +2,51 @@
 //#include <fstream>
 //#include <string>
 //#include <climits>
+//#include <random>
 //
 //using namespace std;
 //
-//inline int rnd(int minVal, int maxVal) { return minVal + rand() % (maxVal - minVal + 1); }
+//void generate_large_file() {
+//    // Инициализация генератора случайных чисел
+//    random_device rd;
+//    mt19937 gen(rd());
+//    uniform_int_distribution<int> dist(0, INT_MAX);
+//
+//    const long long TARGET_SIZE = 1024 * 1024 * 1024; // 1 ГБ в байтах
+//
+//    ofstream outfile("proba.txt");
+//    if (!outfile) {
+//        cerr << "Couldn't open the file for writing!" << '\n';
+//        return;
+//    }
+//
+//
+//    long long current_size = 0;
+//    int counter = 0;
+//
+//    while (current_size < TARGET_SIZE) {
+//        int num = dist(gen); // Генерируем случайное число
+//        outfile << num << '\n'; // Записываем число с новой строки
+//
+//        if (!outfile) {
+//            cerr << "Error writing to the file!" << '\n';
+//            return;
+//        }
+//
+//        // Приблизительный расчёт размера (каждое число + перевод строки)
+//        current_size += to_string(num).length() + 1;
+//
+//        // Выводим прогресс каждый 1 миллион записей
+//        if (++counter % 1000000 == 0) {
+//            cout << "Wroten: " << (current_size / 1048576) << " MB" << '\n';
+//        }
+//    }
+//
+//    outfile.close();
+//    cout << "The file 'proba.txt 'successfully created. Size: "
+//        << (current_size / 1048576) << " MB." << '\n';
+//}
+//
 //
 //#pragma region Simple
 //void SimpleSplitFile(const string& inputFileName, const string& outputFileName1, const string& outputFileName2, int runSize) {
@@ -120,8 +161,8 @@
 //#pragma region Natural
 //void NaturalSplitFile(const string& inputFile, const string& outputFile1, const string& outputFile2) {
 //    ifstream input(inputFile);
-//    ofstream out1(outputFile1);
-//    ofstream out2(outputFile2);
+//    ofstream out1(outputFile1, ios::trunc);
+//    ofstream out2(outputFile2, ios::trunc);
 //
 //    bool writeToFirst = true;
 //    int curr, prev;
@@ -215,46 +256,45 @@
 //#pragma endregion
 //
 //
-//// Генерация исходного файла со случайными числами
-//void FillFileWithRandNums(const string& fileName, int count, int minVal, int maxVal) {
-//    ofstream out(fileName);
-//    if (!out.is_open()) {
-//        cerr << "Error: Cannot open input file." << '\n';
-//        exit(1);
-//    }
-//
-//    for (int i = 0; i < count; ++i) {
-//        out << rnd(minVal, maxVal) << '\n';
-//    }
-//
-//    out.close();
-//}
+////// Генерация исходного файла со случайными числами
+////void FillFileWithRandNums(const string& fileName, int count, int minVal, int maxVal) {
+////    ofstream out(fileName);
+////    if (!out.is_open()) {
+////        cerr << "Error: Cannot open input file." << '\n';
+////        exit(1);
+////    }
+////
+////    for (int i = 0; i < count; ++i) {
+////        out << rnd(minVal, maxVal) << '\n';
+////    }
+////
+////    out.close();
+////}
 //
 //int main() {
 //    srand(time(0));
 //
-//    int n = 20;
-//    string inputFileName = "f.txt";
+//    string inputFileName = "input.txt";
 //
 //    // Предварительно очищаем файлы
-//    fstream clear_file1(inputFileName, ios::out);
-//    clear_file1.close();
+//    //fstream clear_file1(inputFileName, ios::out);
+//    //clear_file1.close();
 //
-//    FillFileWithRandNums(inputFileName, 20, 10, 99);
+//    //FillFileWithRandNums(inputFileName, 20, 10, 99);
 //
-//    ifstream f;
+//    //ifstream f;
 //
-//    f.open(inputFileName);
-//    for (int curr; f >> curr;) { cout << curr << '\n'; }
-//    f.close();
-//    cout << "~~~~~~\n";
+//    //f.open(inputFileName);
+//    //for (int curr; f >> curr;) { cout << curr << '\n'; }
+//    //f.close();
+//    //cout << "~~~~~~\n";
 //
 //    //SimpleExternalSort(inputFileName, n);
 //    NaturalExternalSort(inputFileName);
 //
-//    f.open(inputFileName);
-//    for (int curr; f >> curr;) { cout << curr << '\n'; }
-//    f.close();
+//    //f.open(inputFileName);
+//    //for (int curr; f >> curr;) { cout << curr << '\n'; }
+//    //f.close();
 //
 //    return 0;
 //}
