@@ -361,3 +361,22 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/lab8_external_sort/merged_0.txt
+/lab8_external_sort/chunk_0.txt
+/lab8_external_sort/chunk_1.txt
+/lab8_external_sort/chunk_10.txt
+/lab8_external_sort/chunk_2.txt
+/lab8_external_sort/chunk_3.txt
+/lab8_external_sort/chunk_4.txt
+/lab8_external_sort/chunk_5.txt
+/lab8_external_sort/chunk_6.txt
+/lab8_external_sort/chunk_7.txt
+/lab8_external_sort/chunk_8.txt
+/lab8_external_sort/chunk_9.txt
+/lab8_external_sort/input.txt
+/lab8_external_sort/merged_1.txt
+/lab8_external_sort/merged_2.txt
+/lab8_external_sort/merged_3.txt
+/lab8_external_sort/merged_4.txt
+/lab8_external_sort/SortedFile.txt
+/lab8_external_sort/_INPUT.txt
